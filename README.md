@@ -82,9 +82,12 @@ src/
   world/      World, layout (coordenadas canónicas y teletransportes), TestCourse, Interactables
   sky/        TimeOfDay, Lighting
   ui/         Hud, Menu3D, Screens (carga e inicio)
-  utils/      geometría y texturas procedurales
+  utils/      geometría, texturas procedurales y rutas de assets (assets.ts)
+public/
+  assets/     assets de runtime (se suben al repo): textures/ hdri/ models/ audio/ basis/
 docs/         guías de prueba
-tools/        (fases siguientes) scripts para procesar assets: KTX2, Meshopt, audio
+tools/        sync-basis.mjs; en fases siguientes, scripts para procesar assets (KTX2, Meshopt, audio)
+vercel.json   build, salida y cabeceras para Vercel
 ```
 
 ## Decisiones técnicas
@@ -105,5 +108,43 @@ tools/        (fases siguientes) scripts para procesar assets: KTX2, Meshopt, au
   fotograma, no una por ojo.
 - **WebGPU**: el renderer se crea en un único punto (`RendererFactory`). Los shaders a medida son GLSL, y para
   WebGPU habría que portarlos a TSL.
+
+## Despliegue en Vercel
+
+Es una web 100 % estática: Vercel ejecuta `npm run build` y sirve `dist/`. La configuración está en
+[`vercel.json`](vercel.json), así que no hay que tocar nada en el panel.
+
+**Primera vez (desde GitHub, recomendado)**
+1. Sube el repo a GitHub (`git push`).
+2. En [vercel.com/new](https://vercel.com/new) → *Import Git Repository* → elige el repo.
+3. Vercel detecta **Vite** y lee `vercel.json`: instalación con `npm ci`, build con `npm run build` (comprueba tipos y
+   compila) y salida en `dist`. Pulsa *Deploy*.
+4. Cada `git push` a `main` publica en producción. Las ramas y los PR generan URLs de vista previa.
+
+**Desde la terminal (alternativa)**
+```bash
+npm i -g vercel
+vercel          # despliegue de vista previa (la primera vez vincula el proyecto)
+vercel --prod   # producción
+```
+
+**Qué tener en cuenta**
+- **HTTPS incluido**: las URLs `*.vercel.app` tienen certificado válido. WebXR y el giroscopio funcionan sin el aviso
+  del certificado autofirmado de desarrollo. Para probar en el móvil basta con abrir la URL del despliegue.
+- **Node**: `package.json` exige Node ≥ 22.12 (requisito de Vite 8). Vercel elige la versión a partir de `engines`.
+- **Assets de runtime**: todo lo que se carga en ejecución vive en `public/assets/` y **se sube al repo**:
+  `textures/` (KTX2), `hdri/`, `models/` (glTF/GLB), `audio/` y `basis/` (transcoder Basis de three.js). Los
+  originales en bruto van en `raw-assets/`, que está ignorada. Tras actualizar `three`, ejecuta
+  `npm run sync:basis` y sube el transcoder, que debe coincidir con la versión del `KTX2Loader`.
+- **Rutas**: el proyecto usa `base: './'` y `assetUrl('textures/x.ktx2')` (`src/utils/assets.ts`). Nunca uses rutas
+  absolutas como `/assets/...` ni rutas del disco: así funciona igual en Vercel, en una subcarpeta o en local.
+- **Caché**: el JS/CSS con hash sale en `dist/bundle/` con caché inmutable de 1 año. Los assets de `/assets/` se
+  cachean 1 día y se revalidan en segundo plano, porque no llevan hash en el nombre: si cambias el contenido de un asset,
+  cambia también su nombre (`piedra_v2.ktx2`) para que nadie vea una versión vieja.
+- **Cabeceras**: `vercel.json` fija los tipos MIME de `.ktx2`, `.wasm`, `.hdr` y `.glb`, y una `Permissions-Policy`
+  que permite WebXR, giroscopio, mando y bloqueo de pantalla solo en el propio dominio.
+- **Tamaño**: GitHub rechaza archivos de más de 100 MB. Ningún asset comprimido debería acercarse a eso. Si alguno lo
+  hace, usa Git LFS y actívalo en Vercel (*Settings → Git → Git LFS*).
+- `dist/`, `node_modules/` y `.vercel/` no se suben: Vercel los regenera.
 
 Créditos y licencias: [CREDITS.md](CREDITS.md).

@@ -1,0 +1,18 @@
+# Finales de línea LF en el repo (evita avisos CRLF en Windows)
+* text=auto eol=lf
+
+# Assets binarios de runtime: sin conversión de finales de línea ni diffs de texto
+*.ktx2 binary
+*.basis binary
+*.wasm binary
+*.hdr binary
+*.exr binary
+*.glb binary
+*.bin binary
+*.png binary
+*.jpg binary
+*.webp binary
+*.ogg binary
+*.mp3 binary
+*.m4a binary
+*.wav binary

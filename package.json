@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "sync:basis": "node tools/sync-basis.mjs"
   },
   "dependencies": {
     "three": "^0.187.0",
@@ -19,5 +20,8 @@
     "@vitejs/plugin-basic-ssl": "^2.3.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.7"
+  },
+  "engines": {
+    "node": ">=22.12.0"
   }
 }

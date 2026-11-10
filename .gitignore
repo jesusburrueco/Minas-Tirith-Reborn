@@ -1,6 +1,23 @@
+# Dependencias y builds (Vercel los regenera)
 node_modules/
 dist/
+.vite/
+
+# Vercel CLI y variables de entorno locales
+.vercel/
+.env
+.env.*
+!.env.example
+
+# Descargas en bruto de assets (PNG/EXR/WAV originales). Solo se suben los
+# assets ya procesados que se cargan en runtime, en public/assets/:
+#   textures/*.ktx2 · hdri/*.hdr|*.ktx2 · models/*.glb · audio/*.ogg|*.m4a · basis/ (transcoder)
+raw-assets/
+
+# Sistema y editor
 *.log
 .DS_Store
-# Descargas en bruto de assets (se procesan con tools/)
-raw-assets/
+Thumbs.db
+desktop.ini
+.idea/
+*.swp

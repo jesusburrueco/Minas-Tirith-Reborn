@@ -9,6 +9,9 @@ export default defineConfig({
   preview: { host: true, port: 4173 },
   build: {
     target: 'es2022',
+    // El JS/CSS con hash va a /bundle/ (caché inmutable); /assets/ queda para los
+    // assets de runtime de public/assets/ (texturas, HDRI, modelos, audio, Basis).
+    assetsDir: 'bundle',
     chunkSizeWarningLimit: 1500,
   },
 });

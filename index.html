@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#0b0d12" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icon.svg" />
+    <title>Minas Tirith — Campos del Pelennor</title>
+  </head>
+  <body>
+    <canvas id="view"></canvas>
+
+    <div id="loading" class="screen">
+      <div class="panel">
+        <h1>Minas Tirith</h1>
+        <p class="sub">Campos del Pelennor</p>
+        <div class="bar"><div class="fill"></div></div>
+        <p class="status">Cargando…</p>
+      </div>
+    </div>
+
+    <div id="start" class="screen hidden">
+      <div class="panel">
+        <h1>Minas Tirith</h1>
+        <p class="sub">Un recorrido por los Campos del Pelennor, según los libros</p>
+        <div class="modes"></div>
+        <label class="quality">Calidad
+          <select>
+            <option value="auto">Automática</option>
+            <option value="low">Baja</option>
+            <option value="medium">Media</option>
+            <option value="high">Alta</option>
+          </select>
+        </label>
+        <p class="caps"></p>
+        <p class="hint"></p>
+        <p class="error"></p>
+      </div>
+    </div>
+
+    <div id="portrait" class="hidden">Gira el móvil en horizontal</div>
+    <button id="gear" class="hidden" aria-label="Menú">⚙</button>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -14,19 +14,19 @@
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }]
     },
     {
-      "source": "/(.*)\.ktx2",
+      "source": "/(.*)\\.ktx2",
       "headers": [{ "key": "Content-Type", "value": "image/ktx2" }]
     },
     {
-      "source": "/(.*)\.wasm",
+      "source": "/(.*)\\.wasm",
       "headers": [{ "key": "Content-Type", "value": "application/wasm" }]
     },
     {
-      "source": "/(.*)\.hdr",
+      "source": "/(.*)\\.hdr",
       "headers": [{ "key": "Content-Type", "value": "image/vnd.radiance" }]
     },
     {
-      "source": "/(.*)\.glb",
+      "source": "/(.*)\\.glb",
       "headers": [{ "key": "Content-Type", "value": "model/gltf-binary" }]
     },
     {

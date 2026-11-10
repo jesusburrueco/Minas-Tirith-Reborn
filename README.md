@@ -54,11 +54,22 @@ y "Zona de pruebas" desde el menú. Los que todavía no existen aparecen atenuad
 - [x] **Fase 1 — Base.** Modos VR, estéreo y escritorio; mando PS4 (zona muerta, reconexión, aviso); movimiento con
   gravedad, salto, colisiones y escaleras; viñeta de confort; menú 3D; HUD con fps/draw calls; calidad Baja/Media/Alta
   y automática; zona de pruebas; maqueta de referencia de la ciudad.
-- [ ] Fase 2 — Terreno del Pelennor, cielo físico, niebla, día/noche y vegetación.
+- [x] **Fase 2 — Pelennor.** Terreno de 64 km con LOD continuo, Mindolluin y Ered Nimrais nevados, Ephel Dúath,
+  el Anduin, arroyos, caminos, parcelas de cultivo, granjas, huertos, el Rammas Echor y Osgiliath en ruinas;
+  cielo con nubes, sol, luna y estrellas; niebla por altura; ciclo día/noche; hierba y árboles con viento.
 - [ ] Fase 3 — Minas Tirith procedural: siete niveles, puertas en zigzag, espolón, calles y LOD lejano.
 - [ ] Fase 4 — Ciudadela, Torre Blanca, Patio del Manantial, casas, escaleras y arcos.
 - [ ] Fase 5 — NPCs, estandartes, humo, pájaros, agua y audio.
 - [ ] Fase 6 — Optimización final y pruebas en dispositivo.
+
+### Qué probar en la fase 2
+
+- **Inicio**: sobre el camino de Osgiliath, a 2 km de la Gran Puerta, mirando al oeste. Delante, el Mindolluin y una
+  **maqueta provisional** de la ciudad (la de verdad llega en la fase 3). Detrás (al este), las Ephel Dúath.
+- **Teletransporte** (menú): *Rammas Echor (nordeste)* (huertos y la muralla), *Orillas del Anduin* y
+  *Trigales bajo el Mindolluin*.
+- **Hora**: R1/L1 (o R/F en escritorio). Menú → *Ciclo día/noche*: Parado, Lento, Normal o Rápido.
+- **Rendimiento**: en escritorio, unas 20 draw calls y unos 225k triángulos por ojo en calidad Media.
 
 ### Qué probar en la fase 1
 
@@ -79,18 +90,40 @@ src/
   input/      InputManager → InputFrame; Gamepad, KeyboardMouse, Touch, DeviceOrientation
   player/     Player (rig, cabeza, giro), CharacterController (cápsula cinemática)
   physics/    CollisionWorld (campo de alturas + mallas con BVH)
-  world/      World, layout (coordenadas canónicas y teletransportes), TestCourse, Interactables
-  sky/        TimeOfDay, Lighting
+  world/      World, geo (geografía pura: alturas, río, caminos, campos, Rammas), layout (coordenadas y
+              teletransportes), Water, Farms, Rammas, Distant (Osgiliath), TestCourse, Interactables
+    terrain/  TerrainData (mapas + worker), TerrainMesh (CDLOD), terrainShaders
+  vegetation/ Grass, Trees (procedurales + impostores)
+  fx/         Motes (polen)
+  sky/        TimeOfDay, Sky (cielo, sol, luna, entorno PMREM), atmosphere (niebla y uniforms compartidos)
   ui/         Hud, Menu3D, Screens (carga e inicio)
   utils/      geometría, texturas procedurales y rutas de assets (assets.ts)
 public/
   assets/     assets de runtime (se suben al repo): textures/ hdri/ models/ audio/ basis/
 docs/         guías de prueba
-tools/        sync-basis.mjs; en fases siguientes, scripts para procesar assets (KTX2, Meshopt, audio)
+tools/        assets.json (manifiesto CC0), fetch-assets.mjs, build-textures.mjs (KTX2), sync-basis.mjs
 vercel.json   build, salida y cabeceras para Vercel
 ```
 
 ## Decisiones técnicas
+
+### Fase 2
+- **Terreno CDLOD** (`world/terrain`): un quadtree elige cada fotograma los nodos visibles, más finos cerca. Todos se
+  dibujan con una sola malla instanciada (**1 draw call**). El vertex shader desplaza la malla con el mapa de alturas
+  y funde cada nivel de detalle con el siguiente, así que no hay grietas ni saltos.
+- **Dos mapas de altura** generados en el propio móvil con varios *workers*: uno cercano de 8 km a 4 m por texel
+  (ciudad, Pelennor y Rammas) y otro lejano de 64 km a 64 m por texel (montañas, Anduin, Ephel Dúath). La CPU (para
+  las colisiones) y la GPU muestrean exactamente igual. A las montañas lejanas se les añade relieve en el shader.
+- **Campos y caminos** en el shader del terreno: las parcelas (trigo, arado, hortalizas, huerto, pasto, prado) se
+  calculan con el mismo hash entero en CPU y GPU, así que la hierba, los árboles y las granjas coinciden con el suelo.
+- **Luz ambiental desde el propio cielo** (PMREM) en lugar de un HDRI fijo: con un ciclo día/noche, un HDRI
+  estático no encajaría. Se regenera cuando cambia la hora, con un límite de frecuencia para no dar tirones.
+- **Niebla por altura** integrada a lo largo del rayo, con dispersión hacia el sol y una penumbra en el horizonte
+  oriental (el cielo sombrío de Mordor). Sustituye a la niebla de three en todos los materiales.
+- **Hierba sin transparencias** (hojas de geometría en matas): en iOS el *alpha test* es caro. **Árboles** con malla
+  cerca e impostores renderizados al cargar a partir de unos 75 m (calidad Media).
+- **Texturas**: KTX2 (color ETC1S a 1024 px; normal y rugosidad UASTC a 512 px, porque UASTC apenas comprime).
+  En total ocupan 4,6 MB.
 
 - **Orientación del mundo** (`src/world/layout.ts`): +X = este (Anduin, Osgiliath, Ephel Dúath) y −X = oeste (Mindolluin).
   La Gran Puerta mira al este. Las distancias lejanas están comprimidas: el tramo alcanzable del Rammas Echor es el más

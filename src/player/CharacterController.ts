@@ -44,7 +44,18 @@ export class CharacterController {
     resolved.y -= r;
     this.delta.subVectors(resolved, this.target);
 
-    const th = world.heightAt(resolved.x, resolved.z);
+    let th = world.heightAt(resolved.x, resolved.z);
+    // Laderas demasiado empinadas (> ~50°): no se puede subir por ellas.
+    const stepXZ = Math.hypot(resolved.x - this.position.x, resolved.z - this.position.z);
+    if (stepXZ > 1e-5 && resolved.y < th) {
+      const thOld = world.heightAt(this.position.x, this.position.z);
+      if (th - thOld > stepXZ * 1.19 + 0.002) {
+        resolved.x = this.position.x;
+        resolved.z = this.position.z;
+        v.x = v.z = 0;
+        th = thOld;
+      }
+    }
     if (resolved.y < th) {
       this.delta.y += th - resolved.y;
       resolved.y = th;

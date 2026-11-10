@@ -1,16 +1,15 @@
-import { Color, MathUtils, Vector3 } from 'three';
+import { MathUtils, Vector3 } from 'three';
 
 /** Latitud aproximada de Minas Tirith: el sol de mediodía queda al sur. */
 const MAX_ELEVATION = MathUtils.degToRad(62);
 
 /**
  * Hora del día y dirección del sol. Este (+X) a las 6h, sur (+Z) a mediodía, oeste a las 18h.
- * Fase 1: colores sencillos; la fase 2 los sustituye por cielo físico y atmósfera.
  */
 export class TimeOfDay {
   hours = 10.5;
-  /** Horas de juego por segundo real (0 = parado). */
-  rate = 0;
+  /** Horas de juego por segundo real (0 = parado). Por defecto, 1 h cada 90 s. */
+  rate = 1 / 90;
   /** Velocidad al mantener L1/R1 (horas por segundo). */
   scrubRate = 1.5;
   readonly sunDir = new Vector3();
@@ -41,6 +40,3 @@ export class TimeOfDay {
   }
 }
 
-export const SKY_DAY = new Color(0x9ab8d8);
-export const SKY_NIGHT = new Color(0x070a14);
-export const SKY_DUSK = new Color(0xd99a6c);

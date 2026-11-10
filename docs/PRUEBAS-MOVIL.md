@@ -45,3 +45,16 @@ Dispositivo de referencia: **iPhone 13** (modo estéreo, calidad Media, objetivo
 - fps, draw calls/ojo y la calidad que acaba eligiendo la automática.
 - Si hay mareo: con qué acción (andar, correr, girar).
 - Con la corrección de lente: si las líneas rectas de la rejilla se ven rectas en el visor, o qué valores te van mejor.
+
+## 8. Fase 2 — Pelennor
+- [ ] **Carga**: anota cuántos segundos tarda la barra (el terreno se genera en el propio móvil con varios hilos).
+- [ ] **Inicio**: estás en el camino de Osgiliath. Al oeste, el Mindolluin nevado y la maqueta de la ciudad; al
+      este, las Ephel Dúath oscuras en la bruma.
+- [ ] **fps en calidad Media** mirando a la ciudad, al este y dentro de un huerto (Menú → Teletransporte → *Rammas
+      Echor (nordeste)*). Objetivo: ≥ 58.
+- [ ] **Hierba y árboles** con viento. Los trigales dorados en *Trigales bajo el Mindolluin*.
+- [ ] **El Anduin** (*Orillas del Anduin*): reflejo del cielo y la corriente.
+- [ ] **El Rammas Echor**: no se puede atravesar. Los caminos lo cruzan por pasos con torres.
+- [ ] **Día y noche**: mantén **R1** para adelantar la hora. Amanecer con bruma, atardecer, estrellas y luna.
+      Menú → *Ciclo día/noche* cambia la velocidad.
+- [ ] **Sombras** de árboles y granjas cerca de ti, y las nubes proyectando sombra que se mueve por los campos.

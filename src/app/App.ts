@@ -25,6 +25,8 @@ const KEY_LABELS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
 const QUALITY_CYCLE: QualityChoice[] = ['auto', 'low', 'medium', 'high'];
 const VIGNETTE_STEPS = [0, 0.35, 0.6, 0.85];
 const VIGNETTE_LABEL = ['No', 'Baja', 'Media', 'Alta'];
+const DAY_RATES = [0, 1 / 180, 1 / 90, 1 / 15];
+const DAY_RATE_LABEL = ['Parado', 'Lento', 'Normal', 'Rápido'];
 
 type Fade = { phase: 'out' | 'in'; t: number; action?: () => void } | null;
 
@@ -32,7 +34,8 @@ export class App {
   private canvas = document.getElementById('view') as HTMLCanvasElement;
   private renderer: WebGLRenderer;
   private scene = new Scene();
-  private camera = new PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 9000);
+  // near 0,2 m / far 50 km: precisión de profundidad suficiente hasta las Ephel Dúath
+  private camera = new PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.2, 50000);
   private settings = new SettingsStore();
   private input = new InputManager(this.canvas);
   private orientation = new DeviceOrientationInput();
@@ -104,7 +107,9 @@ export class App {
       this.player = new Player(this.camera, this.world.collision);
       this.player.onFell = () => this.teleport(TELEPORTS[0], false);
       this.scene.add(this.player.rig);
-      this.player.teleport(TELEPORTS[0].position, TELEPORTS[0].yaw);
+      const start = TELEPORTS[0].position.clone();
+      start.y = this.world.collision.heightAt(start.x, start.z) + 0.05;
+      this.player.teleport(start, TELEPORTS[0].yaw);
       this.menu = new Menu3D(this.scene, this.rootPage());
 
       this.input.gamepad.onStatus = (s) => {
@@ -234,7 +239,9 @@ export class App {
       return;
     }
     const go = () => {
-      this.player.teleport(tp.position, tp.yaw);
+      const p = tp.position.clone();
+      p.y = Math.max(p.y, this.world.collision.heightAt(p.x, p.z) + 0.05);
+      this.player.teleport(p, tp.yaw);
       if (this.mode.kind === 'stereo') this.orientation.recenter();
     };
     this.menu.hide();
@@ -284,7 +291,7 @@ export class App {
           ? { kind: 'external', q: this.headQ }
           : { kind: 'mouse' };
     this.player.update(dt, f, s, head, frozen || this.hud.reading);
-    this.world.update(dt, frozen ? 0 : f.timeAxis, this.player.position);
+    this.world.update(dt, frozen ? 0 : f.timeAxis, this.camera, this.player.position, f.timeAxis !== 0);
 
     this.camera.getWorldPosition(this.headPos);
     this.camera.getWorldDirection(this.headDir);
@@ -364,6 +371,11 @@ export class App {
               time.hours = (time.hours + d + 24) % 24;
               time.update(0, 0);
             },
+          },
+          {
+            label: 'Ciclo día/noche',
+            value: () => DAY_RATE_LABEL[nearestIndex(DAY_RATES, this.world.time.rate)],
+            adjust: (d) => (this.world.time.rate = DAY_RATES[(nearestIndex(DAY_RATES, this.world.time.rate) + d + DAY_RATES.length) % DAY_RATES.length]),
           },
           { label: 'Estadísticas', value: () => (s.values.showStats ? 'Sí' : 'No'), adjust: () => s.set('showStats', !s.values.showStats) },
           { label: 'Teletransporte  ›', select: () => this.menu.push(this.teleportPage()) },

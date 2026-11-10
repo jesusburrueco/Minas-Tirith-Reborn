@@ -1,0 +1,14 @@
+{
+  "$comment": "Texturas CC0 de runtime. tools/fetch-assets.mjs las descarga en raw-assets/ y tools/build-textures.mjs las convierte a KTX2 en public/assets/textures/ (y actualiza CREDITS.md).",
+  "textures": [
+    { "id": "grass", "source": "ambientcg", "asset": "Grass004", "size": 1024, "use": "Terreno: hierba del Pelennor" },
+    { "id": "soil", "source": "polyhaven", "asset": "farm_soil", "size": 1024, "use": "Terreno: tierra arada" },
+    { "id": "dirt", "source": "polyhaven", "asset": "brown_mud_dry", "size": 1024, "use": "Terreno: tierra y orillas" },
+    { "id": "rock", "source": "polyhaven", "asset": "rock_face", "size": 1024, "use": "Terreno: roca de montaña" },
+    { "id": "road", "source": "polyhaven", "asset": "gravel_road", "size": 1024, "use": "Terreno: caminos" },
+    { "id": "bark", "source": "polyhaven", "asset": "bark_brown_02", "size": 512, "use": "Árboles y cercas" },
+    { "id": "wall", "source": "polyhaven", "asset": "defense_wall", "size": 1024, "use": "Rammas Echor" },
+    { "id": "plaster", "source": "polyhaven", "asset": "plastered_stone_wall", "size": 1024, "use": "Granjas: muros" },
+    { "id": "roof", "source": "polyhaven", "asset": "roof_slates_02", "size": 512, "use": "Granjas: tejados" }
+  ]
+}

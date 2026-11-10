@@ -40,6 +40,7 @@ export class Menu3D {
   private stack: MenuPage[] = [];
   private sel = 0;
   private lastGazeRow = -1;
+  private rowH = ROW_H;
   private raycaster = new Raycaster();
   private v1 = new Vector3();
   private v2 = new Vector3();
@@ -132,7 +133,7 @@ export class Menu3D {
     const hit = this.raycaster.intersectObject(this.mesh, false)[0];
     if (hit?.uv) {
       const py = (1 - hit.uv.y) * CH;
-      const row = Math.floor((py - ROW_Y0) / ROW_H);
+      const row = Math.floor((py - ROW_Y0) / this.rowH);
       if (this.lastGazeRow !== -2 && row !== this.lastGazeRow && row >= 0 && row < items.length) {
         this.sel = row;
         changed = true;
@@ -173,6 +174,9 @@ export class Menu3D {
     const g = this.g;
     const items = this.page.items();
     this.sel = Math.min(this.sel, items.length - 1);
+    // Filas más bajas si la página tiene muchas entradas (el panel tiene alto fijo).
+    this.rowH = Math.min(ROW_H, (CH - ROW_Y0 - 78) / Math.max(1, items.length));
+    const font = Math.round(Math.min(25, this.rowH * 0.6));
     g.clearRect(0, 0, CW, CH);
     g.fillStyle = 'rgba(16,19,26,0.92)';
     roundRect(g, 4, 4, CW - 8, CH - 8, 22);
@@ -188,20 +192,20 @@ export class Menu3D {
     g.fillText(this.page.title, CW / 2, 50);
 
     items.forEach((it, i) => {
-      const y = ROW_Y0 + i * ROW_H;
+      const y = ROW_Y0 + i * this.rowH;
       if (i === this.sel) {
         g.fillStyle = 'rgba(233,217,166,0.22)';
-        roundRect(g, 18, y + 3, CW - 36, ROW_H - 6, 10);
+        roundRect(g, 18, y + 2, CW - 36, this.rowH - 4, 10);
         g.fill();
       }
       g.fillStyle = it.dim ? '#7d7a72' : '#efe9dc';
-      g.font = '25px Georgia, serif';
+      g.font = `${font}px Georgia, serif`;
       g.textAlign = 'left';
-      g.fillText(it.label, 34, y + ROW_H / 2);
+      g.fillText(it.label, 34, y + this.rowH / 2);
       if (it.value) {
         g.textAlign = 'right';
         g.fillStyle = '#e9d9a6';
-        g.fillText(`‹ ${it.value()} ›`, CW - 34, y + ROW_H / 2);
+        g.fillText(`‹ ${it.value()} ›`, CW - 34, y + this.rowH / 2);
       }
     });
 

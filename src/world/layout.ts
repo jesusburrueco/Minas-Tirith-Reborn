@@ -50,4 +50,8 @@ export const TELEPORTS: TeleportPoint[] = [
   })),
   { id: 'citadel', name: 'Ciudadela', position: new Vector3(), yaw: YAW_EAST, available: false },
   { id: 'test', name: 'Zona de pruebas', position: TEST_ZONE.clone().add(new Vector3(0, 0, 14)), yaw: 0, available: true },
+  // Fase 2 (solo desde el menú). La altura se ajusta al terreno al teletransportarse.
+  { id: 'rammas', name: 'Rammas Echor (nordeste)', position: new Vector3(2050, 0, -2050), yaw: -Math.PI / 4, available: true },
+  { id: 'anduin', name: 'Orillas del Anduin', position: new Vector3(6560, 0, 0), yaw: YAW_EAST, available: true },
+  { id: 'wheat', name: 'Trigales bajo el Mindolluin', position: new Vector3(200, 0, 1500), yaw: 1.2, available: true },
 ];
